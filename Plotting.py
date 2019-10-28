@@ -20,10 +20,10 @@ for b in b_values:
 plt.show()
 
 
+
+
+
 '''
-
-
-
 x = np.arange(0,1,0.01)
 y = np.arange(0,1,0.01)
 
