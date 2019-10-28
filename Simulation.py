@@ -7,7 +7,7 @@ import sys
 
 
 
-
+# coupled ODE function
 def predator_prey_ODE(x,t,a,d,b):
 	xs = x[0]
 	ys = x[1]
@@ -19,30 +19,46 @@ def predator_prey_ODE(x,t,a,d,b):
 
 
 
-# b: [0.1,0.5] test1 parameters with b at lower bound and upper bound. 
-paramstest1 = (1,0.1,0.10)	
-paramstest2 = (1,0.1,0.8)
-param_vec = [paramstest1,paramstest2]
-
-
-def solve_ODE(f_ode,t,t0,x0,a,d,b):
+def solve_ODE(f_ode,t,t0,x0,args):
 	t = np.linspace(0, t0,1000)
-	xs = odeint(f_ode,x0,t,args=(a,d,b))
+	xs = odeint(f_ode,x0,t,args=args)
 	x,y = xs[:,0], xs[:,1]
 
 	return [x,y]
 
-#plotting results
-t0 = 1000
-t = np.linspace(0,t0,1000)
-output1 = solve_ODE(predator_prey_ODE,t,t0,[0.4,0.4],paramstest1[0],paramstest1[1],paramstest1[2])
-output2 = solve_ODE(predator_prey_ODE,t,t0,[10,10],paramstest2[0],paramstest2[1],paramstest2[2])
 
+
+
+#plotting results
+
+t0 = 100
+t = np.linspace(0,t0,1000)
+
+
+
+
+'''
+
+x = np.arange(0,1,0.01)
+y = np.arange(0,1,0.01)
+
+
+X, Y = np.meshgrid(x, y)
+
+u = X*(1-X)-(X*Y)/(0.1+X) 
+v = 0.2*Y*(1-(Y/X))
+fig, ax = plt.subplots(figsize=(7,7))
+ax.quiver(X,Y,u,v)
+
+plt.show()
+'''
+paramstest2 = (1,0.1,0.1)
+
+
+output2 = solve_ODE(predator_prey_ODE,t,t0,[0.4,0.4],paramstest2)
+output1 = solve_ODE(predator_prey_ODE,t,t0,[0.4,0.4],paramstest2)
 
 solutions = np.stack((output1, output2), axis = 0) 
-
-
-
 x1 = solutions[0][0]
 y1 = solutions[0][1]
 x2 = solutions[1][0]
