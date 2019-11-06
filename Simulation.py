@@ -16,11 +16,14 @@ def predator_prey_ODE(x,t,a,d,b):
 
 	return [dxdt,dydt]
 
-def plot(x):
+def plot(x,T):
 	x0 = x
-	t = np.linspace(0, 200,1000)
+	t = np.linspace(0, T,1000)
 	args = (1,0.1,0.2)
 	output = odeint(predator_prey_ODE,x0,t,args=args)
 
 	plt.plot(t,output[:,0])
 	plt.show()
+
+
+
