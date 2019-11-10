@@ -1,3 +1,18 @@
+"""
+#####Numerical Shooting Methdod to solve Boundary Value Probems#####
+
+An implenation of the 'Numerical Shooting Method' to solve boundary 
+value problems. This module consisits of several modular functions
+that may be imported indicually or imported and used in conjuction with each other. 
+This module takes in as input a n-dim. system of first order equations. I.e. higher ordewr ODEs 
+have been reduced to state space and are in first order coupoled form.   
+
+
+
+"""
+
+
+# Standard imports as well as addition functions from Simulation.
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
@@ -8,38 +23,93 @@ import sys
 from scipy.optimize import fsolve
 
 
-##### Numerical Shooting Methdod to solve Boundary Value Probems. 
 
 
-# residue function to be fsolved. 
-def res_fun(u):
-	x0, y0, T = u
+
+
+
+def shooting(fun,u0,phase,T,n):
+
+	"""Calculates the residues for the given initial conditions and BVP problem.
+
+    Several sentences providing an extended description. Refer to
+    variables using back-ticks, e.g. `var`. Note the function utilises scipy.intergrate.ode for integrations purposes. 
+
+    
+    Parameters
+    ----------
+
+				fun:	callable
+						Right-hand side of the system. Dimentionality of (n)
+
+
+
+    			u0:		array_like, shape
+    					initial guess at starting boundary conditions for the given BVP.
+        		
+
+				phase: 	
 	
-	t = np.linspace(0, T,1000)
-	sol_ode = odeint(F,[x0,y0],t,args=(1,0.1,0.2))
+
+
+				T:		int
+						guess at period value
+
+
+				n:		int
+						dimention of `fun`. That is to say the the dimentionality of the right hand side system (n).
+    Returns
+    -------
+    		
+				sol:	
+
+
+				t:		ndarray,shape(n_points,)
+						Time points
+
+				y:		ndarray,shape(n,n_points)
+						Values of the solution at t			
+        
+   
+
+    """
+
+	### Solve `fun` with initail conditions `u0` and period `T` and store final values. 
+
+
+	def res_fun(u):
+		x = u[range(len(u)- 1)]
+		t = u[-1]
+		sol_ode = odeint(fun, x, np.linspace(0,t,1000), args=(1,0.1,0.2))
+		sol = np.zeros(n+1) 
+		for i in range(n): sol[i] = abs(x[i] - sol_ode[-1,i])
+		sol[-1] = (phase)(x) 
+
+		return sol
+
+
+	roots = fsolve(res_fun, u0+[T])
+
+
+	return roots 
 	
-	sol = np.zeros(3) 
-	sol[0] = abs(x0 - sol_ode[-1,0])
-	sol[1] = abs(y0 - sol_ode[-1,1])
-	sol[2] = x0*(1-x0)-(x0*y0)/(0.1+x0)
-
-	return sol
 
 
+#Call/run  red_fun()  example:
 
-def solve_bvp(u):
-	x0, y0, T= u
-	xs0, ys0, Ts = fsolve(res_fun, [x0, y0, T])
 
-	t = np.linspace(0,Ts,1000)
-	sol_ode = odeint(F,[xs0,ys0],t,args=(1,0.1,0.2))
-	xf = sol_ode[-1,0]
-	yf = sol_ode[-1,1]
+u0 = [0.4,0.4]
+T = 18
 
-	return xs0, ys0, xf, yf, Ts
+sol = shooting(F, u0, lambda u0: u0[0]*(1-u0[0])-(u0[0]*u0[1])/(0.1+u0[0]), T, 2)
+print(sol)
 
-xs0, ys0, xf, yf, Ts = solve_bvp([0.5,0.2,25])
-print(xs0, ys0, xf, yf, Ts)
+plot([sol[0],sol[1]],sol[2])
+
+
+
+
+
 
 
 
