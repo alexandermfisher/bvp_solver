@@ -49,8 +49,21 @@ def shooting(fun,u0,phase,T,args):
 				y:		ndarray,shape(n,n_points)
 						values of the solution at t			
 
-    """
 
+
+
+	Example
+	--------		def simulation():
+						u0 = [0.5,0.3]
+						T = 25
+						sol = shooting(fun, u0, lambda u0: u0[0]*(1-u0[0])-(u0[0]*u0[1])/(0.1+u0[0]), T, (1,0.1,0.2))
+						print(sol)
+						plot([sol[0],sol[1]],sol[2])
+						return 
+
+					simulation(
+    """
+    ###	Shooting Code
     ### Unpack variables and find dimention (n) of given ode system.
 	args = args 
 	n = len(u0)
@@ -70,22 +83,9 @@ def shooting(fun,u0,phase,T,args):
 	
 	return fsolve(res_fun, u0+[T]) 	### return result of Root finding using fsolve to solve boundary value problem.
 	
+	
 
 
-
-#Simulation of shooting.() fynction
-
-def simulation():
-	u0 = [0.5,0.3]
-	T = 25
-	sol = shooting(fun, u0, lambda u0: u0[0]*(1-u0[0])-(u0[0]*u0[1])/(0.1+u0[0]), T, (1,0.1,0.2))
-	print(sol)
-	plot([sol[0],sol[1]],sol[2])
-	return 
-
-
-
-simulation()
 
 
 
