@@ -28,7 +28,7 @@ from scipy.optimize import fsolve
 
 
 
-def shooting(fun,u0,phase,T,n):
+def shooting(fun,u0,phase,T,args):
 
 	"""Calculates the residues for the given initial conditions and BVP problem.
 
@@ -42,67 +42,72 @@ def shooting(fun,u0,phase,T,n):
 				fun:	callable
 						Right-hand side of the system. Dimentionality of (n)
 
-
-
     			u0:		array_like, shape
     					initial guess at starting boundary conditions for the given BVP.
         		
-
-				phase: 	
+				phase: 	callable 
+						A given pahse given condition with inputs same as u0 	
 	
-
-
 				T:		int
 						guess at period value
-
-
-				n:		int
-						dimention of `fun`. That is to say the the dimentionality of the right hand side system (n).
     Returns
-    -------
-    		
+    -------		
 				sol:	
-
 
 				t:		ndarray,shape(n_points,)
 						Time points
 
 				y:		ndarray,shape(n,n_points)
 						Values of the solution at t			
-        
-   
 
     """
 
+
+    ### Unpack variables and find dimention (n) of given ode system.
+	args = args 
+	n = len(u0)
+
+
 	### Solve `fun` with initail conditions `u0` and period `T` and store final values. 
-
-
 	def res_fun(u):
 		x = u[range(len(u)- 1)]
 		t = u[-1]
-		sol_ode = odeint(fun, x, np.linspace(0,t,1000), args=(1,0.1,0.2))
+		sol_ode = odeint(fun, x, np.linspace(0,t,1000), args=args)
+		
 		sol = np.zeros(n+1) 
 		for i in range(n): sol[i] = abs(x[i] - sol_ode[-1,i])
-		sol[-1] = (phase)(x) 
+		sol[-1] = phase(x)  
 
 		return sol
 
-
-	roots = fsolve(res_fun, u0+[T])
-
-
-	return roots 
+	### Root find using fsolve and solve boundary value problem.
+	return fsolve(res_fun, u0+[T])
 	
 
 
-#Call/run  red_fun()  example:
 
 
-u0 = [0.4,0.4]
-T = 18
 
-sol = shooting(F, u0, lambda u0: u0[0]*(1-u0[0])-(u0[0]*u0[1])/(0.1+u0[0]), T, 2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+u0 = [0.5,0.3]
+T = 25
+
+sol = shooting(F, u0, lambda u0: u0[0]*(1-u0[0])-(u0[0]*u0[1])/(0.1+u0[0]), T, (1,0.1,0.2))
+
 print(sol)
+
 
 plot([sol[0],sol[1]],sol[2])
 
