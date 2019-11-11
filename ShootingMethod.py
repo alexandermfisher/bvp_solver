@@ -13,8 +13,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
 from scipy.integrate import odeint
-from Simulation import predator_prey_ODE as F
-from Simulation import plot
+from simulation_prey_predator import predator_prey_ODE as fun
+from simulation_prey_predator import plot
 import sys
 from scipy.optimize import fsolve
 
@@ -78,7 +78,7 @@ def shooting(fun,u0,phase,T,args):
 def simulation():
 	u0 = [0.5,0.3]
 	T = 25
-	sol = shooting(F, u0, lambda u0: u0[0]*(1-u0[0])-(u0[0]*u0[1])/(0.1+u0[0]), T, (1,0.1,0.2))
+	sol = shooting(fun, u0, lambda u0: u0[0]*(1-u0[0])-(u0[0]*u0[1])/(0.1+u0[0]), T, (1,0.1,0.2))
 	print(sol)
 	plot([sol[0],sol[1]],sol[2])
 	return 
