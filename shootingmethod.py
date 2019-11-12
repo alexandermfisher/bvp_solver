@@ -18,7 +18,7 @@ from simulation_prey_predator import plot
 import sys
 from scipy.optimize import fsolve
 
-def shooting(fun,u0,phase,T,args):
+def shooting(fun,u0,phase,T,args,plot=0):
 
 	"""Calculates the residues for the given initial conditions and BVP problem.
 
@@ -56,17 +56,21 @@ def shooting(fun,u0,phase,T,args):
 	--------		def simulation():
 						u0 = [0.5,0.3]
 						T = 25
-						sol = shooting(fun, u0, lambda u0: u0[0]*(1-u0[0])-(u0[0]*u0[1])/(0.1+u0[0]), T, (1,0.1,0.2))
+						sol = shooting(fun, u0, lambda u0: u0[0]*(1-u0[0])-(u0[0]*u0[1])/(0.1+u0[0]), T, (1,0.1,0.2), plot = 0)
 						print(sol)
 						plot([sol[0],sol[1]],sol[2])
 						return 
 
 					simulation(
     """
+
+
+
     ###	Shooting Code
     ### Unpack variables and find dimention (n) of given ode system.
 	args = args 
 	n = len(u0)
+
 
 	### Solve `fun` with initail conditions `u0` and period `T` and store final values. 
 	def res_fun(u):
@@ -80,16 +84,25 @@ def shooting(fun,u0,phase,T,args):
 
 		return sol
 
+	# Optional Plotting
+	def plotoption(fun,u0,args,T):
+		t = np.linspace(0, T,1000)
+		output = odeint(fun,u0,t,args=args)
+		plt.plot(t,output[:,0])
+		plt.show()
+
+
+
+
+	### result of Root finding using fsolve to solve boundary value problem.
+	bvp_sol = fsolve(res_fun, u0+[T])
+
+	### if selected plotoption() will plot bvp_sol results.
+	if plot == 1:
+		plotoption(fun,[bvp_sol[0],bvp_sol[1]],args,bvp_sol[-1])
+
 	
-	return fsolve(res_fun, u0+[T]) 	### return result of Root finding using fsolve to solve boundary value problem.
-	
-	
-
-
-
-
-
-
+	return bvp_sol
 
 
 

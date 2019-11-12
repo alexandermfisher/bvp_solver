@@ -12,8 +12,8 @@ from math import pi, sqrt
 import numpy as np
 
 
-# Shooting test given aanalytical solutions:
-'''
+# Shooting test given analytical solutions:
+
 def test_hopf_bifurcation(b0,bf):
 
 		def hopf_ode(u0,t,b,a):
@@ -42,9 +42,7 @@ def test_hopf_bifurcation(b0,bf):
 
 		return 
 
-# Run Test:
-test_hopf_bifurcation(0,2)
-'''
+
 
 def test_hopf_bifurcation_3D(b0, bf):
 
@@ -67,8 +65,8 @@ def test_hopf_bifurcation_3D(b0, bf):
 			numerical_sol.append(simulation(i,-1))
 			analytical_sol.append([sqrt(i),0,0,2*pi])
 
-		sol1 = np.isclose(numerical_sol, analytical_sol, atol=1e-01)
-		sol2 = np.allclose(numerical_sol,analytical_sol, rtol=1e-01, atol=1e-01)
+		sol1 = np.isclose(numerical_sol, analytical_sol, atol=1e-02)
+		sol2 = np.allclose(numerical_sol,analytical_sol, rtol=1e-03, atol=1e-02)
 
 		print("Results using np.isclose()")
 		print(sol1)
@@ -78,7 +76,17 @@ def test_hopf_bifurcation_3D(b0, bf):
 		return 
 	
 
-test_hopf_bifurcation_3D(0,2)
+
+# Errors and Raises Tests:
+
+
+def test_input_type():
+	
+
+
+
+
+
 
 
 
