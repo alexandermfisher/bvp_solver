@@ -16,20 +16,21 @@ import numpy as np
 
 def test_hopf_bifurcation(b0,bf):
 
-		def hopf_ode(u0,t,b,a):
+		def hopf_ode(u0,t,args):
 			x,y = u0
+			a,b = args
 			dxdt = b*x-y+a*x*(x**2+y**2)
 			dydt = x+b*y+a*y*(x**2+y**2)
 			return [dxdt,dydt]
 
-		def simulation(b,a):
-			sol = sm.shooting(hopf_ode, [0.8*sqrt(b),0.01], lambda u0: u0[0]-sqrt(b), 2*pi, (b,a))
+		def simulation(a,b):
+			sol = sm.shooting(hopf_ode, [0.8*sqrt(b),0.01], lambda u0: u0[0]-sqrt(b), 2*pi, args = [a,b])
 			return sol[0]
 
 		numerical_sol = []
 		analytical_sol =[]
 		for i in [int(x) for x in np.linspace(b0,bf,50)]:	
-			numerical_sol.append(simulation(i,-1))
+			numerical_sol.append(simulation(-1,i))
 			analytical_sol.append(sqrt(i))
 
 		sol1 = np.isclose(numerical_sol, analytical_sol, atol=1e-08)
@@ -47,22 +48,23 @@ def test_hopf_bifurcation(b0,bf):
 def test_hopf_bifurcation_3D(b0, bf):
 
 
-		def hopf_ode(u0,t,b,a):
+		def hopf_ode(u0,t,args):
 			x,y,z = u0
+			a,b = args
 			dxdt = b*x-y+a*x*(x**2+y**2)
 			dydt = x+b*y+a*y*(x**2+y**2)
 			dzdt = -z
 
 			return [dxdt,dydt,dzdt]
 
-		def simulation(b,a):
-			sol = sm.shooting(hopf_ode, [0.8*sqrt(b),0.01, 0.01], lambda u0: u0[0]-sqrt(b), 2*pi, (b,a))
+		def simulation(a,b):
+			sol = sm.shooting(hopf_ode, [0.8*sqrt(b),0.01, 0.01], lambda u0: u0[0]-sqrt(b), 2*pi, args = [a,b])
 			return sol
 
 		numerical_sol = []
 		analytical_sol =[]
 		for i in [int(x) for x in np.linspace(b0,bf,50)]:	
-			numerical_sol.append(simulation(i,-1))
+			numerical_sol.append(simulation(-1,i))
 			analytical_sol.append([sqrt(i),0,0,2*pi])
 
 		sol1 = np.isclose(numerical_sol, analytical_sol, atol=1e-02)
@@ -74,14 +76,19 @@ def test_hopf_bifurcation_3D(b0, bf):
 		print(sol2)
 
 		return 
-	
 
+
+	
+"""
+test_hopf_bifurcation(0,2)
+test_hopf_bifurcation_3D(0,2)
+"""
 
 # Errors and Raises Tests:
 
 
 def test_input_type():
-	
+	pass	
 
 
 

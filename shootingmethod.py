@@ -14,7 +14,6 @@ import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
 from scipy.integrate import odeint
 from simulation_prey_predator import predator_prey_ODE as fun
-from simulation_prey_predator import plot
 import sys
 from scipy.optimize import fsolve
 
@@ -61,25 +60,21 @@ def shooting(fun,u0,phase,T,args,plot=0):
 						plot([sol[0],sol[1]],sol[2])
 						return 
 
-					simulation(
+					simulation()
     """
 
 
 
     ###	Shooting Code
-    ### Unpack variables and find dimention (n) of given ode system.
-	args = args 
-	n = len(u0)
-
-
+    
 	### Solve `fun` with initail conditions `u0` and period `T` and store final values. 
 	def res_fun(u):
 		x = u[range(len(u)- 1)]		# Solving ode system fun integrating with odeint for given input x, t. 
 		t = u[-1]
-		sol_ode = odeint(fun, x, np.linspace(0,t,1000), args=args)
+		sol_ode = odeint(fun, x, np.linspace(0,t,1000), args=(args,))
 		
-		sol = np.zeros(n+1) 		# Solving and storing the residuals of the difference and phase condition. 
-		for i in range(n): sol[i] = abs(x[i] - sol_ode[-1,i])
+		sol = np.zeros(len(x)+1) 		# Solving and storing the residuals of the difference and phase condition. 
+		for i in range(len(x)): sol[i] = abs(x[i] - sol_ode[-1,i])
 		sol[-1] = phase(x)  
 
 		return sol
@@ -87,7 +82,7 @@ def shooting(fun,u0,phase,T,args,plot=0):
 	# Optional Plotting
 	def plotoption(fun,u0,args,T):
 		t = np.linspace(0, T,1000)
-		output = odeint(fun,u0,t,args=args)
+		output = odeint(fun,u0,t,args=(args,))
 		plt.plot(t,output[:,0])
 		plt.show()
 
@@ -95,12 +90,13 @@ def shooting(fun,u0,phase,T,args,plot=0):
 
 
 	### result of Root finding using fsolve to solve boundary value problem.
-	bvp_sol = fsolve(res_fun, u0+[T])
+	bvp_sol = fsolve(res_fun, np.concatenate((u0,T), axis=None))
 
 	### if selected plotoption() will plot bvp_sol results.
 	if plot == 1:
 		plotoption(fun,[bvp_sol[0],bvp_sol[1]],args,bvp_sol[-1])
 
+	
 	
 	return bvp_sol
 
@@ -108,13 +104,12 @@ def shooting(fun,u0,phase,T,args,plot=0):
 
 
 
-
-
-
-
-
-
-
+'''
+u0 = np.array([0.5,0.3])
+T = np.array([25])
+phase = lambda u0: u0[0]*(1-u0[0])-(u0[0]*u0[1])/(0.1+u0[0])
+print(shooting(fun, u0, phase, T, args = [1,0.1,0.2], plot = 0))
+'''
 
 
 
