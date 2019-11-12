@@ -13,7 +13,7 @@ import numpy as np
 
 
 # Shooting test given aanalytical solutions:
-
+'''
 def test_hopf_bifurcation(b0,bf):
 
 		def hopf_ode(u0,t,b,a):
@@ -44,13 +44,41 @@ def test_hopf_bifurcation(b0,bf):
 
 # Run Test:
 test_hopf_bifurcation(0,2)
+'''
+
+def test_hopf_bifurcation_3D(b0, bf):
 
 
-def test_hopf_bifurcation_3D():
+		def hopf_ode(u0,t,b,a):
+			x,y,z = u0
+			dxdt = b*x-y+a*x*(x**2+y**2)
+			dydt = x+b*y+a*y*(x**2+y**2)
+			dzdt = -z
 
+			return [dxdt,dydt,dzdt]
+
+		def simulation(b,a):
+			sol = sm.shooting(hopf_ode, [0.8*sqrt(b),0.01, 0.01], lambda u0: u0[0]-sqrt(b), 2*pi, (b,a))
+			return sol
+
+		numerical_sol = []
+		analytical_sol =[]
+		for i in [int(x) for x in np.linspace(b0,bf,50)]:	
+			numerical_sol.append(simulation(i,-1))
+			analytical_sol.append([sqrt(i),0,0,2*pi])
+
+		sol1 = np.isclose(numerical_sol, analytical_sol, atol=1e-01)
+		sol2 = np.allclose(numerical_sol,analytical_sol, rtol=1e-01, atol=1e-01)
+
+		print("Results using np.isclose()")
+		print(sol1)
+		print("Results using np.allclose")
+		print(sol2)
+
+		return 
 	
 
-
+test_hopf_bifurcation_3D(0,2)
 
 
 
