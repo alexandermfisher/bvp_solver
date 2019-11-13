@@ -17,6 +17,8 @@ def predator_prey_ODE(x,t,args):
 
 	return [dxdt,dydt]
 
+
+'''
 def plot(x,T):
 	x0 = x
 	t = np.linspace(0, T,1000)
@@ -25,6 +27,8 @@ def plot(x,T):
 
 	plt.plot(t,output[:,0])
 	plt.show()
+'''
+
 
 
 
