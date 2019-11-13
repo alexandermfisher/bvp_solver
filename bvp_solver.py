@@ -9,10 +9,10 @@ from math import pi, sqrt
 from numpy import append
 
 
-def shooting(fun,phase,u0,T,args,plot=0):
 
+def shooting(fun,u0,args,phase = None, plot=0):
 
-	def G(u):
+	def _G(u,args):
 		x = u[:-1]		
 		t = u[-1]
 		solve_ode = odeint(fun, x, np.linspace(0,t,1000), args=(args,))
@@ -20,31 +20,38 @@ def shooting(fun,phase,u0,T,args,plot=0):
 		residues = np.zeros(len(u)) 
 		for i in range(len(x)): residues[i] = x[i] - solve_ode[-1,i]
 		residues[-1] = phase(x,args) 
-
-		return residues
 		
-	return fsolve(G, np.concatenate((u0,T),axis=None)) 
+		return residues
+
+	if phase == None: 
+		G = fun
+	else:
+		G = _G 
+		 
+	return fsolve(G, u0, args=(args,)) 
 
 
-def continuation(fun,phase,u0,T,args,var_par = 0, max_steps = 100, step_size = 0.01):
+def continuation(fun,u0,args, phase = None, var_par = 0, max_steps = 100, step_size = 0.01):
 
-	solutions = np.zeros((max_steps,3))
+
+
+	solutions = np.zeros((max_steps,len(u0)))
 	params = np.zeros((max_steps,1))
-	roots = shooting(fun,phase,u0,T,args)
+	roots = shooting(fun,u0,args,phase)
 	
 
 	for i in range(max_steps):
 		solutions[i,:] = roots
 		params[i] = args[var_par]
 		args[var_par] = (float(args[var_par]) - step_size)
-		roots = shooting(fun,phase,roots[:-1],T,args)
+		roots = shooting(fun,roots, args, phase)
 	
 
 	return solutions, params
 
 
 
-
+"""
 def phase(u, args):
 	x,y = u
 	a,b = args 
@@ -64,22 +71,15 @@ def hopf_ode(u,t,args):
 
 
 solutions, params = continuation(hopf_ode,phase,u0,T0,args, var_par = 1, max_steps = 1999, step_size = 0.001)
+"""
 
+def fun(x,c): 
+	return x**3-x+c 
 
-
-
-
-
-
-fig = plt.figure()
-ax = plt.axes(projection="3d")
-
-x_line = params[:]
-z_line = solutions[:,0]
-y_line = solutions[:,1]
-ax.plot3D(x_line, y_line, z_line)
-
-
+u0 = np.array([1.5])
+c = np.array([float(2)])
+solutions, params = continuation(fun,u0,c, phase = None, var_par = 0, max_steps = 399, step_size = 0.01)
+plt.plot(params,solutions)
 plt.show()
 
 
@@ -100,6 +100,18 @@ plt.show()
 
 
 
+"""
+fig = plt.figure()
+ax = plt.axes(projection="3d")
+
+x_line = params[:]
+z_line = solutions[:,0]
+y_line = solutions[:,1]
+ax.plot3D(x_line, y_line, z_line)
+
+
+plt.show()
+"""
 '''
 
 
@@ -137,8 +149,6 @@ solution = shooting(hopf_ode,phase,u0,T0,args)
 print(np.shape(solution)) 
 
 '''
-
-
 
 
 
