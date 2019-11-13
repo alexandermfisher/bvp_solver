@@ -35,7 +35,7 @@ def continuation(fun,u0,args, phase = None, var_par = 0, max_steps = 100, step_s
 
 
 
-	solutions = np.zeros((max_steps,len(u0)))
+	solutions = np.zeros((max_steps,int(len(u0))))
 	params = np.zeros((max_steps,1))
 	roots = shooting(fun,u0,args,phase)
 	
@@ -48,6 +48,70 @@ def continuation(fun,u0,args, phase = None, var_par = 0, max_steps = 100, step_s
 	
 
 	return solutions, params
+
+
+def arclength(fun,u0,args,phase=None,var_par=0,max_steps=100,step_size=0.01):
+
+	## Generate first two points using continuation max_steps= 1
+
+	sol, params = continuation(fun,u0,args,phase,var_par,2,step_size)
+	v= np.concatenate((sol,params), axis=1)
+	deltav = v[0,:]-v[1,:]
+	print(v)
+	print(deltav) 
+	
+
+	return
+
+
+def phase(u, args):
+	x,y = u
+	a,b = args 
+	return x-sqrt(b)
+
+u0 = np.array([sqrt(2),0, 2*pi])
+#T0 = np.array([2*pi])
+args = np.array([-1,float(2)])
+
+def hopf_ode(u,t,args):
+			x,y = u
+			a,b = args
+			dxdt = b*x-y+a*x*(x**2+y**2)
+			dydt = x+b*y+a*y*(x**2+y**2)
+			return [dxdt,dydt]
+
+arclength(hopf_ode,u0,args,phase,var_par=1,max_steps=2,step_size=0.01)
+'''
+solutions, params = continuation(hopf_ode,u0,args, phase, var_par = 1, max_steps = 2, step_size = 0.01)
+sol = np.concatenate((solutions,params), axis=1)
+print(sol)
+print(np.shape(sol))
+'''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -68,11 +132,8 @@ def hopf_ode(u,t,args):
 			dydt = x+b*y+a*y*(x**2+y**2)
 			return [dxdt,dydt]
 
-
-
-solutions, params = continuation(hopf_ode,phase,u0,T0,args, var_par = 1, max_steps = 1999, step_size = 0.001)
 """
-
+'''
 def fun(x,c): 
 	return x**3-x+c 
 
@@ -82,7 +143,7 @@ solutions, params = continuation(fun,u0,c, phase = None, var_par = 0, max_steps 
 plt.plot(params,solutions)
 plt.show()
 
-
+'''
 
 
 
