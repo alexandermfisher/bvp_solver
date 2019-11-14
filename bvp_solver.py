@@ -31,7 +31,7 @@ def shooting(fun,u0,args,phase = None,solver=scipy.optimize.fsolve):
 			G = _G
 
 		 
-	return solver(G, u0, args=(args,)) 
+	return fsolve(G, u0, args=(args,)) 
 
 
 def continuation(fun,u0,args, phase = None, var_par = 0, max_steps = 100, step_size = 0.01):
@@ -100,19 +100,6 @@ def hopf_ode(u,t,args):
 			return [dxdt,dydt]
 
 """
-'''
-def fun(x,c): 
-	return x**3-x+c 
-
-u0 = np.array([1.5])
-c = np.array([float(2)])
-solutions, params = continuation(fun,u0,c, phase = None, var_par = 0, max_steps = 399, step_size = 0.01)
-plt.plot(params,solutions)
-plt.show()
-
-'''
-
-
 
 """
 fig = plt.figure()
