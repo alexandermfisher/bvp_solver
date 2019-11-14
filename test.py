@@ -1,17 +1,22 @@
 """
 Test Script:
 
-This is a script designed to test the shooting code in shooting.py
-for diffent types of inputs and to see accuacry and effectivess as well. This will include testing against ode systems with known analytic solutions.
-In addition erros messages and raises will also be tested.  
+This is a script designed to test the shooting code in bvp_solver.py
+for diffent types of inputs and to see accuacry and effectivess as well. This will include testing against ode systems with known analytic solutions. 
 
 """
+
+
+
+
 from bvp_solver import shooting, continuation
 from math import pi, sqrt
 import numpy as np
 from scipy.optimize import fsolve
 import scipy
 from matplotlib import pyplot as plt
+import argparse
+import sys
 
 # Shooting tests given analytical solutions:
 
@@ -133,6 +138,9 @@ def test_hopf_bifurcation_modified(u0,args,phase):
 
 # Error and Raise checks:
 
+def incorrect_type_test():
+	fun = ["string"] 
+	return continuation(fun,[1],[1])
 
 
 
@@ -140,13 +148,18 @@ def test_hopf_bifurcation_modified(u0,args,phase):
 
 
 
-"""
+
+
+
+
+
 ###--------------------------------------------------------------------------###
 ### Testing section for shooting using hopf bifurcation equations 2d, and 3d ###
 ###--------------------------------------------------------------------------###
 
 
-----------------------------------------------3d Hopf Bifurcation:
+#----------------------------------------------3d Hopf Bifurcation:
+
 
 u0 = np.array([sqrt(2),0,0,2*pi])
 
@@ -160,7 +173,8 @@ def phase(u, args):
 test_hopf_bifurcation_3D(u0,[-1,2],phase)
 
 
-----------------------------------------------2d Hopf Bifurcation:
+#----------------------------------------------2d Hopf Bifurcation:
+
 
 
 ###--------------------------------------------------------------------------------###
@@ -168,24 +182,28 @@ test_hopf_bifurcation_3D(u0,[-1,2],phase)
 ###--------------------------------------------------------------------------------###
 
 
-----------------------------------------------Cubic Equation:
+
+#----------------------------------------------Cubic Equation:
+
 
 test_cubic_equation()
 
-----------------------------------------------Normal Hopf Bifurcation:
+#----------------------------------------------Normal Hopf Bifurcation:
+
 
 u0 = np.array([sqrt(2),0,2*pi])
 
 args = [-1,2]
 
 def phase(u, args):
-	x,y = u
-	a,b = args 
-	return x-sqrt(b)
+		x,y = u
+		a,b = args 
+		return x-sqrt(b)
 
 test_hopf_bifurcation_normal(u0,args,phase)
 
-----------------------------------------------Modified Hopf Bifurcation:
+#----------------------------------------------Modified Hopf Bifurcation:
+
 
 u0 = np.array([sqrt(2),0,2*pi])
 
@@ -198,8 +216,10 @@ def phase(u, args):
 
 test_hopf_bifurcation_modified(u0,args,phase)
 
-"""
+#----------------------------------------------Incorrect Data Type:
 
+
+incorrect_type_test()
 
 
 
