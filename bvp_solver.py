@@ -7,10 +7,11 @@ from simulation_prey_predator import predator_prey_ODE as myode
 from scipy.optimize import fsolve
 from math import pi, sqrt
 from numpy import append
+import scipy
 
 
 
-def shooting(fun,u0,args,phase = None, arclengthcon = None):
+def shooting(fun,u0,args,phase = None,solver=scipy.optimize.fsolve):
 
 	def _G(u,args):
 		x = u[:-1]		
@@ -23,36 +24,17 @@ def shooting(fun,u0,args,phase = None, arclengthcon = None):
 		
 		return residues
 
-	def __G(v,args):
-		
-		
-		x = v[:-2]		
-		t = v[-2]
-		p = v[-1]
-		argss = np.concatenate((args,p),axis=None)
-		solve_ode = odeint(fun, x, np.linspace(0,t,1000), args=(argss,))
-
-		residues = np.zeros(len(v)) 
-		for i in range(len(x)): residues[i] = x[i] - solve_ode[-1,i]
-		residues[-2] = phase(x,argss) 
-		residues[-1] = arclengthcon(v,argss) 
-		
-		return residues
-
 	if phase == None: 
-		G = fun
+
+			G = fun
 	else:
-		if arclength == None:
-			G = _G 
-		else:
-			G = __G 
+			G = _G
 
 		 
-	return fsolve(G, u0, args=(args,)) 
+	return solver(G, u0, args=(args,)) 
+
 
 def continuation(fun,u0,args, phase = None, var_par = 0, max_steps = 100, step_size = 0.01):
-
-
 
 	solutions = np.zeros((max_steps,int(len(u0))))
 	params = np.zeros((max_steps,1))
@@ -69,57 +51,6 @@ def continuation(fun,u0,args, phase = None, var_par = 0, max_steps = 100, step_s
 	return solutions, params
 
 
-def arclength(fun,u0,args,phase=None, var_par=0,max_steps=100,step_size=0.01,step_length = 0.01):
-
-	## Generate first two points using continuation max_steps= 2
-
-	sol,params = continuation(fun,u0,args,phase,var_par,2,step_size)
-	v = np.concatenate((sol,params), axis=1)
-
-	secant = v[1,:]-v[0,:]
-	v2 = v[1,:]+secant*step_length
-
-	arc = lambda v: np.dot((v-v2),secant)
-	print(arc)
-
-	sol = shooting(fun,v2,args,phase,arclengthcon=arc)
-
-	
-
-	return sol 
-
-
-
-
-
-def phase(u, args):
-	x,y = u
-	a,b = args 
-	return x-sqrt(b)
-
-u0 = np.array([sqrt(2),0, 2*pi,2])
-#T0 = np.array([2*pi])
-args = np.array([-1,float(2)])
-argss = np.array([-1])
-
-def hopf_ode(u,t,args):
-			x,y = u
-			a,b = args
-			dxdt = b*x-y+a*x*(x**2+y**2)
-			dydt = x+b*y+a*y*(x**2+y**2)
-			return [dxdt,dydt]
-
-
-
-
-sol = arclength(hopf_ode,u0,argss,phase, var_par=0,max_steps=100,step_size=0.01,step_length = 0.01)
-
-"""
-
-sol = shooting(hopf_ode,u0,argss,phase,arclength)
-print(sol)
-
-"""
 
 
 
@@ -141,13 +72,11 @@ print(sol)
 
 
 
-#arclength(hopf_ode,u0,args,phase,var_par=1,max_steps=2,step_size=0.01)
-'''
-solutions, params = continuation(hopf_ode,u0,args, phase, var_par = 1, max_steps = 2, step_size = 0.01)
-sol = np.concatenate((solutions,params), axis=1)
-print(sol)
-print(np.shape(sol))
-'''
+
+
+
+
+
 
 
 
