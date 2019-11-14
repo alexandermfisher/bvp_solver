@@ -8,30 +8,51 @@ from scipy.optimize import fsolve
 from math import pi, sqrt
 from numpy import append
 import scipy
+import sys
 
 
 
 def shooting(fun,u0,args,phase = None,solver=scipy.optimize.fsolve):
 
-	def _G(u,args):
-		x = u[:-1]		
-		t = u[-1]
-		solve_ode = odeint(fun, x, np.linspace(0,t,1000), args=(args,))
 
-		residues = np.zeros(len(u)) 
-		for i in range(len(x)): residues[i] = x[i] - solve_ode[-1,i]
-		residues[-1] = phase(x,args) 
+		def _G(u,args):
+				x = u[:-1]		
+				t = u[-1]
+				solve_ode = odeint(fun, x, np.linspace(0,t,1000), args=(args,))
+
+				residues = np.zeros(len(u)) 
+				for i in range(len(x)): residues[i] = x[i] - solve_ode[-1,i]
+				residues[-1] = phase(x,args) 
 		
-		return residues
+				return residues
 
-	if phase == None: 
+		if phase == None: 
 
-			G = fun
-	else:
-			G = _G
+				G = fun
+		else:
+				G = _G
 
-		 
-	return fsolve(G, u0, args=(args,)) 
+		
+		try:
+			solver(G,u0,args=(args,))
+			
+
+		except ValueError:
+			print("Oops Value Error: Failed to converge. Please try another value or equation.")
+			sys.exit()
+
+		except TypeError:
+			print("Oops TypeError: check that the inputs are of the correct type.")
+			sys.exit()
+		
+		except IndexError:
+			print("Oops IndexError: Check that dimentions of inputs makes sense.")
+			sys.exit()
+			
+
+		return	solver(G,u0,args=(args,))
+
+
 
 
 def continuation(fun,u0,args, phase = None, var_par = 0, max_steps = 100, step_size = 0.01):
@@ -49,7 +70,6 @@ def continuation(fun,u0,args, phase = None, var_par = 0, max_steps = 100, step_s
 	
 
 	return solutions, params
-
 
 
 

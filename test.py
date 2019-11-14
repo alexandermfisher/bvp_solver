@@ -113,12 +113,25 @@ def test_hopf_bifurcation_normal(u0,args,phase):
 	return
 
 
+def test_hopf_bifurcation_modified(u0,args,phase):
+
+	def hopf_ode_mod(u,t,args):
+			x,y = u
+			a,b = args
+			dxdt = b*x-y-a*x*(x**2+y**2)+a*x*(x**2+y**2)**2
+			dydt = x+b*y+a*y*(x**2+y**2)+a*y*(x**2+y**2)**2
+			return [dxdt,dydt]
+
+	solutions, params = continuation(hopf_ode_mod,u0,args, phase, var_par = 1, max_steps = 40, step_size = 0.075)
+	
+	plt.scatter(params,solutions[:,0])
+	plt.show()
 
 
+	return
 
 
-
-
+# Error and Raise checks:
 
 
 
@@ -131,8 +144,6 @@ def test_hopf_bifurcation_normal(u0,args,phase):
 ###--------------------------------------------------------------------------###
 ### Testing section for shooting using hopf bifurcation equations 2d, and 3d ###
 ###--------------------------------------------------------------------------###
-
-
 
 
 ----------------------------------------------3d Hopf Bifurcation:
@@ -174,8 +185,22 @@ def phase(u, args):
 
 test_hopf_bifurcation_normal(u0,args,phase)
 
+----------------------------------------------Modified Hopf Bifurcation:
+
+u0 = np.array([sqrt(2),0,2*pi])
+
+args = [-1,2]
+
+def phase(u, args):
+	x,y = u
+	a,b = args 
+	return  b*x-y-a*x*(x**2+y**2)+a*x*(x**2+y**2)**2
+
+test_hopf_bifurcation_modified(u0,args,phase)
 
 """
+
+
 
 
 
