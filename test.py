@@ -6,50 +6,50 @@ for diffent types of inputs and to see accuacry and effectivess as well. This wi
 In addition erros messages and raises will also be tested.  
 
 """
-
-import shootingmethod as sm
+from bvp_solver import shooting, continuation
 from math import pi, sqrt
 import numpy as np
-
+from scipy.optimize import fsolve
+import scipy
 
 # Shooting test given analytical solutions:
 
-def test_hopf_bifurcation(b0,bf):
+def test_hopf_bifurcation(u0,args,phase):
 
-		def hopf_ode(u0,t,args):
-			x,y = u0
+		def hopf_ode(u,t,args):
+			x,y = u
 			a,b = args
 			dxdt = b*x-y+a*x*(x**2+y**2)
 			dydt = x+b*y+a*y*(x**2+y**2)
 			return [dxdt,dydt]
 
-		def simulation(a,b):
-			sol = sm.shooting(hopf_ode, [0.8*sqrt(b),0.01], lambda u0: u0[0]-sqrt(b), 2*pi, args = [a,b])
-			return sol[0]
-
+		shooting_sol = shooting(hopf_ode,u0,args,phase)
+		print(shooting_sol)
 		numerical_sol = []
-		analytical_sol =[]
-		for i in [int(x) for x in np.linspace(b0,bf,50)]:	
-			numerical_sol.append(simulation(-1,i))
-			analytical_sol.append(sqrt(i))
+		analytical_sol = []	
+		numerical_sol.append(shooting_sol)
+		analytical_sol.append([sqrt(args[1]),0,2*pi])
 
-		sol1 = np.isclose(numerical_sol, analytical_sol, atol=1e-08)
-		sol2 = np.allclose(numerical_sol,analytical_sol, rtol=1e-05, atol=1e-08)
-
-		print("Results using np.isclose()")
-		print(sol1)
-		print("Results using np.allclose")
-		print(sol2)
-
-		return 
+		
+		test1 = np.isclose(numerical_sol, analytical_sol, atol=1e-04)
+		test2 = np.allclose(numerical_sol,analytical_sol, rtol=1e-05, atol=1e-04)
 
 
+		"""
+		print("test_hopf_bifurcation using np.isclose()")
+		print(test1)
+		print("test_hopf_bifurcation using np.allclose")
+		print(test2)
+		"""
+		return  [test1[0],test2]
 
-def test_hopf_bifurcation_3D(b0, bf):
 
 
-		def hopf_ode(u0,t,args):
-			x,y,z = u0
+def test_hopf_bifurcation_3D(u0,args,phase):
+
+
+		def hopf_ode(u,t,args):
+			x,y,z = u
 			a,b = args
 			dxdt = b*x-y+a*x*(x**2+y**2)
 			dydt = x+b*y+a*y*(x**2+y**2)
@@ -57,39 +57,86 @@ def test_hopf_bifurcation_3D(b0, bf):
 
 			return [dxdt,dydt,dzdt]
 
-		def simulation(a,b):
-			sol = sm.shooting(hopf_ode, [0.8*sqrt(b),0.01, 0.01], lambda u0: u0[0]-sqrt(b), 2*pi, args = [a,b])
-			return sol
 
+		shooting_sol = shooting(hopf_ode,u0,args,phase)
+		print(shooting_sol)
 		numerical_sol = []
-		analytical_sol =[]
-		for i in [int(x) for x in np.linspace(b0,bf,50)]:	
-			numerical_sol.append(simulation(-1,i))
-			analytical_sol.append([sqrt(i),0,0,2*pi])
+		analytical_sol = []	
+		numerical_sol.append(shooting_sol)
+		analytical_sol.append([sqrt(args[1]),0,0,2*pi])
 
-		sol1 = np.isclose(numerical_sol, analytical_sol, atol=1e-02)
-		sol2 = np.allclose(numerical_sol,analytical_sol, rtol=1e-03, atol=1e-02)
+		
+		test1 = np.isclose(numerical_sol, analytical_sol, atol=1e-04)
+		test2 = np.allclose(numerical_sol,analytical_sol, rtol=1e-05, atol=1e-04)
 
-		print("Results using np.isclose()")
-		print(sol1)
-		print("Results using np.allclose")
-		print(sol2)
+		print("test_hopf_bifurcation using np.isclose()")
+		print(test1[0])
+		print("test_hopf_bifurcation using np.allclose")
+		print(test2)
 
-		return 
-
-
-	
-"""
-test_hopf_bifurcation(0,2)
-test_hopf_bifurcation_3D(0,2)
-"""
-
-# Errors and Raises Tests:
+		return [test1[0],test2]
 
 
-def test_input_type():
-	pass	
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+###--------------------------------------------------------------------------###
+### Testing section for shooting using hopf bifurcation equations 2d, and 3d ###
+###--------------------------------------------------------------------------###
+
+def phase(u, args):
+	x,y,z = u
+	a,b = args 
+	return x-sqrt(b)
+
+u0 = np.array([sqrt(2),0,0,2*pi])
+
+test_hopf_bifurcation_3D(u0,[-1,2],phase)
 
 
 
