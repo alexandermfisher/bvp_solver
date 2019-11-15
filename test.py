@@ -15,6 +15,10 @@ How to USE:
 This script takes a command line argument in the form of a single digit in domain [0,5].
 Consequently either test 1,2,3,4,5 or 6 is run. For more information and detail on individual tests see code below.
 
+Example: To execute test number 3., in the command line run:
+
+			$ test.py 2	
+
 """
 
 
